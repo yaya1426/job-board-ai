@@ -24,7 +24,7 @@ An AI-powered job board backend with automated resume evaluation using OpenAI GP
 
 ## Prerequisites
 
-- **Node.js 18-22** (⚠️ Node.js 23+ NOT supported)
+- **Node.js 18+**
 - npm or yarn
 - OpenAI API Key
 
@@ -32,13 +32,10 @@ An AI-powered job board backend with automated resume evaluation using OpenAI GP
 
 ### 1. Install Node.js (if needed)
 
-If you have Node.js 23 or 24, install a compatible version:
+Ensure you have Node.js 18 or higher:
 
 ```bash
-# Using nvm
-nvm install 20
-nvm use 20
-node -v  # Should show v20.x.x
+node -v  # Should show v18.x.x or higher
 ```
 
 ### 2. Install Dependencies
@@ -178,7 +175,7 @@ backend/
 If you get compilation errors, check your Node.js version:
 
 ```bash
-node -v  # Must be 18-22
+node -v  # Must be 18 or higher
 ```
 
 ### Database Issues

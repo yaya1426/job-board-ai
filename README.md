@@ -22,13 +22,13 @@ An AI-powered job board application with automated resume evaluation using OpenA
 
 ### Prerequisites
 
-- **Node.js 18-22** (Node.js 23+ NOT supported)
+- **Node.js 18+**
 - OpenAI API Key
 
 ### Installation
 
 ```bash
-# 1. Install Node.js 20 (if needed)
+# 1. Install Node.js 18+ (if needed)
 nvm install 20
 nvm use 20
 
