@@ -27,10 +27,11 @@ export class OpenAIService {
   }
 
   /**
-   * Evaluate resume against job requirements using GPT-4o-mini
+   * Evaluate resume against job requirements by passing the file ID
+   * directly to the chat completions API - OpenAI handles parsing the file.
    */
   static async evaluateResume(
-    resumeText: string,
+    openaiFileId: string,
     job: Job
   ): Promise<AIEvaluationResult> {
     if (!openai) {
@@ -38,16 +39,12 @@ export class OpenAIService {
     }
 
     try {
-      const prompt = `
-Evaluate this candidate's resume against the following job requirements:
+      const prompt = `Evaluate this candidate's resume against the following job requirements:
 
 Job Title: ${job.title}
 Requirements: ${job.requirements}
 Description: ${job.description}
 Location: ${job.location}
-
-Resume Content:
-${resumeText}
 
 Please provide:
 1. A score from 1-10 (10 being perfect match)
@@ -63,8 +60,7 @@ Format your response as JSON:
 {
   "score": <number>,
   "feedback": "<string>"
-}
-`;
+}`;
 
       const completion = await openai.chat.completions.create({
         model: openaiModel,
@@ -75,7 +71,18 @@ Format your response as JSON:
           },
           {
             role: 'user',
-            content: prompt,
+            content: [
+              {
+                type: 'file',
+                file: {
+                  file_id: openaiFileId,
+                },
+              },
+              {
+                type: 'text',
+                text: prompt,
+              },
+            ],
           },
         ],
         response_format: { type: 'json_object' },
@@ -98,47 +105,6 @@ Format your response as JSON:
     } catch (error) {
       console.error('OpenAI evaluation error:', error);
       throw new Error('Failed to evaluate resume');
-    }
-  }
-
-  /**
-   * Retrieve file content from OpenAI
-   */
-  static async retrieveFileContent(fileId: string): Promise<string> {
-    if (!openai) {
-      throw new Error('OpenAI client not initialized. Please set OPENAI_API_KEY in your .env file.');
-    }
-
-    try {
-      const fileContent = await openai.files.content(fileId);
-      const buffer = Buffer.from(await fileContent.arrayBuffer());
-      return buffer.toString('utf-8');
-    } catch (error) {
-      console.error('OpenAI file retrieval error:', error);
-      // If retrieval fails, return a fallback
-      throw new Error('Failed to retrieve file from OpenAI');
-    }
-  }
-
-  /**
-   * Extract text from file (simplified version)
-   * In production, you'd want to use pdf-parse or similar
-   */
-  static async extractTextFromFile(filePath: string): Promise<string> {
-    try {
-      // For now, just read as text
-      // In production, add proper PDF/DOCX parsing
-      const content = fs.readFileSync(filePath, 'utf-8');
-      return content;
-    } catch (error) {
-      // If reading as text fails, try to read as buffer and convert
-      try {
-        const buffer = fs.readFileSync(filePath);
-        return buffer.toString('utf-8', 0, Math.min(10000, buffer.length)); // First 10KB
-      } catch (e) {
-        console.error('Text extraction error:', error);
-        return 'Unable to extract text from resume file';
-      }
     }
   }
 }

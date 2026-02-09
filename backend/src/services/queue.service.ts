@@ -65,11 +65,13 @@ class EvaluationQueue {
         return;
       }
 
-      // Extract text from resume
-      const resumeText = await OpenAIService.extractTextFromFile(application.resume_path);
+      // Evaluate resume using the OpenAI file ID
+      if (!application.openai_file_id) {
+        throw new Error(`Application ${applicationId} has no OpenAI file ID`);
+      }
 
-      // Evaluate resume against job requirements
-      const evaluation = await OpenAIService.evaluateResume(resumeText, job);
+      console.log(`Evaluating with OpenAI file ID: ${application.openai_file_id}`);
+      const evaluation = await OpenAIService.evaluateResume(application.openai_file_id, job);
 
       // Determine status based on score and threshold
       let newStatus: 'rejected' | 'under_review' = 'under_review';

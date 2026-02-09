@@ -26,6 +26,10 @@ app.use(express.json());
 // Express 5: Explicitly set extended to true (default is now false)
 app.use(express.urlencoded({ extended: true }));
 
+// Serve uploaded files statically
+const uploadDir = process.env.UPLOAD_DIR || './uploads';
+app.use('/uploads', express.static(uploadDir));
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
