@@ -23,5 +23,5 @@ export const createApplicationValidation = [
   body('job_id').isInt().withMessage('Valid job ID is required'),
   body('full_name').notEmpty().withMessage('Full name is required'),
   body('email').isEmail().withMessage('Valid email is required'),
-  body('phone').notEmpty().withMessage('Phone number is required'),
+  body('phone').optional().isString().withMessage('Phone number must be a string'),
 ];
